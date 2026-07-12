@@ -1,0 +1,17 @@
+plugins:
+  community_notes_enabled:
+    default: true
+    client: true
+  community_notes_quorum_floor:
+    default: 6
+    min: 1
+  community_notes_quorum_percent:
+    default: 0.5
+    min: 0
+  community_notes_agreement_percent:
+    default: 67
+    min: 50
+    max: 100
+  community_notes_max_words:
+    default: 100
+    min: 10

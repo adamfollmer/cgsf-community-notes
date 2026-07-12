@@ -1,0 +1,23 @@
+en:
+  js:
+    community_notes:
+      add_note: "Add community note"
+      modal_title: "Propose a community note"
+      modal_hint: "A note adds context under a post — it never alters or hides the post. If accepted by anonymous community vote, it becomes visible to every reader. Your authorship stays anonymous."
+      category: "Category"
+      body_placeholder: "Concise, factual, sourced if possible…"
+      words: "%{count} / %{max} words"
+      submit: "Propose note"
+      cancel: "Cancel"
+      accepted_label: "Community note"
+      pending_label: "Proposed note — voting open"
+      agree: "Agree"
+      disagree: "Disagree"
+      agreement: "%{percent}% agreement"
+      your_note: "You proposed this note. Authorship is anonymous to others."
+      categories:
+        correction: "Correction"
+        conduct: "Conduct"
+        placement: "Placement"
+        duplicate: "Duplicate"
+        scam: "Scam warning"

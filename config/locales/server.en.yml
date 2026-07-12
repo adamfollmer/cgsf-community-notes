@@ -1,0 +1,12 @@
+en:
+  site_settings:
+    community_notes_enabled: "Enable community notes: members propose context on posts, accepted by anonymous supermajority vote."
+    community_notes_quorum_floor: "Minimum number of votes before a note can be accepted, regardless of community size"
+    community_notes_quorum_percent: "Quorum as a percentage of active members (the floor applies when this is smaller)"
+    community_notes_agreement_percent: "Percentage of votes that must agree for a note to be accepted"
+    community_notes_max_words: "Maximum words in a community note"
+  community_notes:
+    errors:
+      word_limit: "must be %{max} words or fewer"
+      already_proposed: "You've already proposed a note on this post."
+      voting_closed: "This note has been accepted — voting is closed."
