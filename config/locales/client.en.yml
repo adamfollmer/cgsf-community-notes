@@ -14,6 +14,7 @@ en:
       agree: "Agree"
       disagree: "Disagree"
       agreement: "%{percent}% agreement"
+      allowance_used: "You've used your community note for this week. You can propose another on %{date}."
       your_note: "You proposed this note. Authorship is anonymous to others."
       categories:
         correction: "Correction"

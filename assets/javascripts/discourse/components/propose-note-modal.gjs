@@ -15,8 +15,37 @@ export default class ProposeNoteModal extends Component {
   @tracked body = "";
   @tracked category = "correction";
   @tracked saving = false;
+  @tracked checked = false;
+  @tracked nextAt = null;
 
   categories = CATEGORIES;
+
+  constructor() {
+    super(...arguments);
+    this.loadAllowance();
+  }
+
+  // Check the weekly allowance before they start writing.
+  async loadAllowance() {
+    try {
+      const result = await ajax("/community-notes/allowance");
+      if (result.remaining === 0 && result.next_at) {
+        this.nextAt = new Date(result.next_at);
+      }
+    } catch {
+      // The server still enforces the allowance on submit.
+    } finally {
+      this.checked = true;
+    }
+  }
+
+  get nextDate() {
+    return this.nextAt?.toLocaleDateString(undefined, {
+      weekday: "long",
+      month: "long",
+      day: "numeric",
+    });
+  }
 
   get maxWords() {
     return this.args.model.maxWords || 100;
@@ -27,7 +56,12 @@ export default class ProposeNoteModal extends Component {
   }
 
   get disabled() {
-    return this.saving || this.wordCount === 0 || this.wordCount > this.maxWords;
+    return (
+      !this.checked ||
+      this.saving ||
+      this.wordCount === 0 ||
+      this.wordCount > this.maxWords
+    );
   }
 
   categoryLabel(cat) {
@@ -79,6 +113,11 @@ export default class ProposeNoteModal extends Component {
       class="propose-note-modal"
     >
       <:body>
+        {{#if this.nextAt}}
+          <p class="propose-note-modal__limit">
+            {{i18n "community_notes.allowance_used" date=this.nextDate}}
+          </p>
+        {{else}}
         <p class="propose-note-modal__hint">{{i18n "community_notes.modal_hint"}}</p>
         <label>{{i18n "community_notes.category"}}</label>
         <select {{on "change" this.updateCategory}} class="propose-note-modal__category">
@@ -97,14 +136,17 @@ export default class ProposeNoteModal extends Component {
         <div class="propose-note-modal__count {{if (gt this.wordCount this.maxWords) '--over'}}">
           {{i18n "community_notes.words" count=this.wordCount max=this.maxWords}}
         </div>
+        {{/if}}
       </:body>
       <:footer>
-        <DButton
-          @action={{this.submit}}
-          @label="community_notes.submit"
-          @disabled={{this.disabled}}
-          class="btn-primary"
-        />
+        {{#unless this.nextAt}}
+          <DButton
+            @action={{this.submit}}
+            @label="community_notes.submit"
+            @disabled={{this.disabled}}
+            class="btn-primary"
+          />
+        {{/unless}}
         <DButton @action={{@closeModal}} @label="community_notes.cancel" class="btn-flat" />
       </:footer>
     </DModal>

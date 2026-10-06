@@ -54,6 +54,20 @@ after_initialize do
       (agrees.to_f / total) >= (SiteSetting.community_notes_agreement_percent / 100.0)
     end
 
+    # Site-wide proposal allowance, rolling window, same for everyone. A note
+    # proposed under a post shows to members while voting is open, so this keeps
+    # proposals from becoming a second way to post. Computed, never stored.
+    def self.allowance_for(user)
+      window = SiteSetting.community_notes_allowance_window_days.days
+      budget = SiteSetting.community_notes_weekly_allowance
+      recent =
+        where(author_id: user.id).where("created_at > ?", window.ago).order(:created_at).pluck(:created_at)
+      remaining = [budget - recent.size, 0].max
+      # The allowance reopens when enough of the oldest notes age out of the window.
+      next_at = remaining.zero? ? recent[recent.size - budget] + window : nil
+      { remaining: remaining, next_at: next_at }
+    end
+
     def agreement_percent
       total = note_votes.count
       return nil if total.zero?
@@ -85,6 +99,11 @@ after_initialize do
       if ::CommunityNotes::Note.exists?(post_id: post.id, author_id: current_user.id)
         return render_json_error(I18n.t("community_notes.errors.already_proposed"), status: 422)
       end
+      allowance = ::CommunityNotes::Note.allowance_for(current_user)
+      if allowance[:remaining].zero?
+        date = I18n.l(allowance[:next_at].to_date, format: :long)
+        return render_json_error(I18n.t("community_notes.errors.allowance_used", date: date), status: 422)
+      end
 
       note = ::CommunityNotes::Note.new(
         post_id: post.id,
@@ -97,6 +116,12 @@ after_initialize do
       else
         render_json_error(note.errors.full_messages.join(", "), status: 422)
       end
+    end
+
+    # Checked when the propose window opens, so nobody writes a note they can't send.
+    def allowance
+      allowance = ::CommunityNotes::Note.allowance_for(current_user)
+      render json: { remaining: allowance[:remaining], next_at: allowance[:next_at]&.iso8601 }
     end
 
     def vote
@@ -115,6 +140,7 @@ after_initialize do
   end
 
   Discourse::Application.routes.append do
+    get "/community-notes/allowance" => "community_notes/notes#allowance"
     post "/community-notes" => "community_notes/notes#create"
     put "/community-notes/:id/vote" => "community_notes/notes#vote"
   end

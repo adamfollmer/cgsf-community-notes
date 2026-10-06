@@ -5,8 +5,11 @@ en:
     community_notes_quorum_percent: "Quorum as a percentage of active members (the floor applies when this is smaller)"
     community_notes_agreement_percent: "Percentage of votes that must agree for a note to be accepted"
     community_notes_max_words: "Maximum words in a community note"
+    community_notes_weekly_allowance: "How many notes each member can propose per window, across the whole site (everyone, staff included)"
+    community_notes_allowance_window_days: "Length of the note allowance window in days. Rolling: a note counts until it is this many days old."
   community_notes:
     errors:
       word_limit: "must be %{max} words or fewer"
       already_proposed: "You've already proposed a note on this post."
       voting_closed: "This note has been accepted — voting is closed."
+      allowance_used: "You've used your community note for this week. You can propose another on %{date}."

@@ -15,3 +15,9 @@ plugins:
   community_notes_max_words:
     default: 100
     min: 10
+  community_notes_weekly_allowance:
+    default: 1
+    min: 1
+  community_notes_allowance_window_days:
+    default: 7
+    min: 1

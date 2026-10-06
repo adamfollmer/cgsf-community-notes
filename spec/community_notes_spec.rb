@@ -51,6 +51,48 @@ RSpec.describe "cgsf-community-notes", type: :request do
     expect(response.status).to eq(422)
   end
 
+  context "with the weekly allowance" do
+    fab!(:other_post) { Fabricate(:post, topic: Fabricate(:topic, user: author), user: author) }
+
+    def propose_on(user, target)
+      sign_in(user)
+      post "/community-notes.json", params: { post_id: target.id, category: "correction", body: "Context for this post." }
+    end
+
+    it "allows one note per week across the whole site, then reopens" do
+      freeze_time
+      propose_on(proposer, post_record)
+      expect(response.status).to eq(200)
+
+      propose_on(proposer, other_post)
+      expect(response.status).to eq(422)
+      expect(response.parsed_body["errors"].first).to include("You've used your community note for this week")
+
+      freeze_time 7.days.from_now + 1.minute
+      propose_on(proposer, other_post)
+      expect(response.status).to eq(200)
+    end
+
+    it "applies to staff too" do
+      admin = Fabricate(:admin, name: nil)
+      propose_on(admin, post_record)
+      propose_on(admin, other_post)
+      expect(response.status).to eq(422)
+    end
+
+    it "reports the allowance before writing" do
+      freeze_time
+      sign_in(proposer)
+      get "/community-notes/allowance.json"
+      expect(response.parsed_body["remaining"]).to eq(1)
+
+      propose_on(proposer, post_record)
+      get "/community-notes/allowance.json"
+      expect(response.parsed_body["remaining"]).to eq(0)
+      expect(Time.zone.parse(response.parsed_body["next_at"])).to be_within(1.second).of(7.days.from_now)
+    end
+  end
+
   it "enforces the word limit" do
     propose(proposer, body: (["word"] * 101).join(" "))
     expect(response.status).to eq(422)
