@@ -3,9 +3,9 @@ en:
     community_notes:
       add_note: "Add community note"
       modal_title: "Propose a community note"
-      modal_hint: "A note adds context under a post — it never alters or hides the post. If accepted by anonymous community vote, it becomes visible to every reader. Your authorship stays anonymous."
+      modal_hint: "A note adds context under a post, it does not hide or remove the post. If accepted by anonymous community votes, it becomes visible to every reader. Community note authors and votes are not identified."
       category: "Category"
-      body_placeholder: "Concise, factual, sourced if possible…"
+      body_placeholder: "Concise, factual, source if possible."
       words: "%{count} / %{max} words"
       submit: "Propose note"
       cancel: "Cancel"
