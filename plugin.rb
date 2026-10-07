@@ -101,7 +101,7 @@ after_initialize do
       end
       allowance = ::CommunityNotes::Note.allowance_for(current_user)
       if allowance[:remaining].zero?
-        date = I18n.l(allowance[:next_at].to_date, format: :long)
+        date = allowance[:next_at].strftime("%A, %B %-d")
         return render_json_error(I18n.t("community_notes.errors.allowance_used", date: date), status: 422)
       end
 
